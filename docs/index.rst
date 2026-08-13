@@ -38,8 +38,7 @@ Main features
 * unsupervised discovery of spatial gene-expression programs;
 * joint modeling of multiple sections, samples or developmental stages;
 * explicit per-section spatial graph construction;
-* spot-by-program activities and gene-by-program profiles with validated
-  orientations;
+* spot-by-program activities and shared gene-by-program profiles;
 * CPU and CUDA execution through the same analysis interface.
 
 Installation
@@ -60,9 +59,7 @@ are available and otherwise falls back to NumPy.
 Quick start
 -----------
 
-Preprocessing remains visible because filtering and feature selection depend
-on the dataset. SORT-specific steps begin with construction of the spatial
-graph:
+The following example starts from a prepared ``AnnData`` object:
 
 .. code-block:: python
 
@@ -94,9 +91,10 @@ Output interpretation
 ---------------------
 
 ``result.W`` contains nonnegative spatial activities and ``result.Q`` contains
-the corresponding gene loadings. Component 0 is the fitted background in the
-paper analyses. A learned component is a gene-expression program and should
-not automatically be interpreted as a cell type, pathway or causal effect.
+the corresponding gene weights. The requested number of components includes
+one background component. The first component (Python index 0, reported as
+GEP00 in the manuscript) captures broad background expression; the remaining
+components are the signal GEPs used for biological interpretation.
 
 Reproducibility and paper analyses
 ----------------------------------
@@ -109,8 +107,8 @@ archive. See :doc:`REPRODUCIBILITY` and :doc:`PAPER_RELEASE_SCOPE`.
 Citation and license
 --------------------
 
-Citation metadata are provided in ``CITATION.cff``. SORT is released under the
-MIT License.
+Citation information will be provided upon publication of the associated
+manuscript. SORT is released under the MIT License.
 
 Support
 -------

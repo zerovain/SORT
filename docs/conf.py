@@ -2,8 +2,8 @@
 
 
 project = "SORT"
-author = "SORT authors"
-copyright = "2026, SORT authors"
+author = "SORT contributors"
+copyright = "2026, SORT contributors"
 
 extensions = ["nbsphinx", "myst_parser"]
 templates_path = ["_templates"]

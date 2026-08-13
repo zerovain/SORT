@@ -1,4 +1,3 @@
-include CITATION.cff
 include environment.yml
 include THIRD_PARTY_NOTICES.md
 include .readthedocs.yaml
