@@ -52,9 +52,9 @@ class SpatialSemiNMF:
     def __init__(  
         self,  
         n_components: int,  
-        # ── core (users should tune these two) ──────────────────────────────  
+        # ── core ───────────────────────────────────────────────────────────
         alpha: float = 0.1,  
-        beta: float = 0.05,  
+        beta: float = 0.05,  # Deprecated; retained for older callers.
         # ── regularisation ──────────────────────────────────────────────────  
         lambda_l1_W: float = 0.01,  
         lambda_l1_Q: float = 0.0,           # off by default  
@@ -77,7 +77,7 @@ class SpatialSemiNMF:
     ):  
         self.r                  = n_components  
         self.alpha              = alpha  
-        self.beta               = beta  
+        self.beta               = beta  # Compatibility metadata only.
         self.lambda_l1_W_base   = lambda_l1_W  
         self.lambda_l1_Q_base   = lambda_l1_Q  
         self.l1_weight_strategy = l1_weight_strategy  
@@ -456,7 +456,7 @@ class SpatialSemiNMF:
             self.Q_torch,
             self.W,
             X,
-            beta             = self.beta,
+            beta             = self.beta,  # Accepted but ignored by the Q updater.
             lambda_l1        = self.lambda_l1_Q,
             riem_optimizer   = self.riem_optimizer,
             lr               = None,
@@ -609,7 +609,7 @@ def decompose(
     use_highly_variable: bool = True,  
     # ── core ────────────────────────────────────────────────────────────────  
     alpha: float = 0.1,  
-    beta: float = 0.05,  
+    beta: float = 0.05,  # Deprecated; retained for older callers.
     # ── regularisation ──────────────────────────────────────────────────────  
     lambda_l1_W: float = 0.01,  
     lambda_l1_Q: float = 80.0,  
@@ -651,7 +651,7 @@ def decompose(
     layer             : which layer to use (default: adata.X)
     use_highly_variable : restrict to HVGs when available
     alpha             : spatial regularisation strength
-    beta              : orthogonality penalty relative weight
+    beta              : deprecated compatibility argument; ignored
     lambda_l1_W       : L1 strength for W
     lambda_l1_Q       : L1 strength for Q  (0 = disabled)
     l1_weight_strategy: 'fixed' | 'adaptive' | 'none'
@@ -661,7 +661,7 @@ def decompose(
     tv_update_freq    : TV weight refresh interval (epochs)
     tv_stage          : 'stage2' | 'both'
     stage1_epochs     : epochs for hard-orthogonality stage
-    stage2_epochs     : epochs for soft-orthogonality (Adam) stage
+    stage2_epochs     : epochs for the hard-constrained Riemannian Adam stage
     ortho_mode        : 'huber'|'frobenius'|'frobenius_sq'|'l1'
     huber_delta       : Huber δ for orthogonality penalty
     smooth_l1_delta   : Huber δ for smooth-L1 on Q

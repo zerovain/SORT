@@ -524,7 +524,7 @@ def update_Q_riemannian(
     Q_torch:         'torch.Tensor',
     W:               np.ndarray,
     X:               Union[np.ndarray, 'spmatrix'],
-    beta:            float = 0.0,
+    beta:            float = 0.0,  # Deprecated compatibility argument; ignored.
     lambda_l1:       Optional[np.ndarray] = None,
     riem_optimizer:  Optional['RiemannianAdam'] = None,
     lr:              Optional[float] = None,
@@ -549,7 +549,9 @@ def update_Q_riemannian(
     """
     Update signal columns Q_s with Riemannian Adam and the background column
     q0 with unconstrained gradient descent. Gradient alignment is handled by
-    S_neg and S_l1Q; clipping protects retraction during warm-up.
+    S_neg and S_l1Q; clipping protects retraction during warm-up. ``beta`` is
+    retained for older callers but is not part of the loss. Orthogonality is
+    maintained by tangent projection and retraction to the Stiefel manifold.
     """
     if not TORCH_AVAILABLE:
         raise ImportError("PyTorch is required.")
@@ -726,7 +728,7 @@ def update_Q_adam(
     Q_torch:         'torch.Tensor',
     W:               np.ndarray,
     X:               Union[np.ndarray, 'spmatrix'],
-    beta:            float = 0.05,
+    beta:            float = 0.05,  # Deprecated compatibility argument; ignored.
     lambda_l1:       Optional[np.ndarray] = None,
     optimizer:       Optional[object] = None,
     lr:              Optional[float] = None,
@@ -748,7 +750,7 @@ def update_Q_adam(
     proj_freq:       int = 0,
     riem_optimizer:  Optional[RiemannianAdam] = None,
 ) -> Tuple['torch.Tensor', RiemannianAdam]:
-    """Preserve the external signature while using Riemannian Adam."""
+    """Preserve the legacy signature while using hard-constrained Riemannian Adam."""
     return update_Q_riemannian(
         Q_torch         = Q_torch,
         W               = W,

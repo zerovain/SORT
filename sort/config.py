@@ -19,7 +19,7 @@ class SORTConfig:
     layer: Optional[str] = None
     use_highly_variable: bool = True
     alpha: float = 0.3
-    beta: float = 0.5
+    beta: float = 0.5  # Deprecated compatibility argument; ignored by the optimizer.
     lambda_l1_W: float = 0.3
     lambda_l1_Q: float = 300.0
     l1_weight_strategy: Literal["fixed", "adaptive", "none"] = "adaptive"

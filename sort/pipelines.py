@@ -669,7 +669,7 @@ def run_sort_pipeline(
     sample_key: str = 'sample_id',  
     # SORT model parameters  
     alpha: float = 0.6,  
-    beta: float = 0.5,  
+    beta: float = 0.5,  # Deprecated; retained for archived callers.
     lambda_l1_W: float = 0.5,  
     lambda_l1_Q: float = 80.0,  
     use_tv: bool = True,  
@@ -719,7 +719,7 @@ def run_sort_pipeline(
     alpha : float, default 0.6  
         Weight for spatial regularization (0.0-1.0), higher = more smoothing  
     beta : float, default 0.5  
-        Weight for orthogonality constraint (0.0-1.0)  
+        Deprecated compatibility argument; ignored by the current optimizer.
     lambda_l1_W : float, default 0.5  
         L1 penalty for loadings W (sparsity in cells)  
     lambda_l1_Q : float, default 80.0  
