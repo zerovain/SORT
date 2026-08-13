@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use SORT, please cite the associated manuscript and archived software release."
+title: "SORT: Spatial Orthogonal Regularized Transcriptomic decomposition"
+type: software
+authors:
+  - family-names: "Zhang"
+    given-names: "Lei"
+version: 1.0.0
+license: MIT
+repository-code: "https://github.com/zerovain/SORT"
+url: "https://github.com/zerovain/SORT"
