@@ -24,6 +24,7 @@ class SORTConfig:
     lambda_l1_Q: float = 300.0
     l1_weight_strategy: Literal["fixed", "adaptive", "none"] = "adaptive"
     lambda_neg: float = 1.0
+    # Internal defaults; normally unchanged.
     use_tv: bool = True
     tv_epsilon: float = 1e-2
     tv_update_freq: int = 5
