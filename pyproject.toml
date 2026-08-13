@@ -50,16 +50,6 @@ Issues = "https://github.com/zerovain/SORT/issues"
 [project.optional-dependencies]
 gpu = ["cupy-cuda12x>=12.3,<13"]
 test = ["pytest>=7,<9", "build>=1,<2"]
-docs = [
-  "ipykernel>=6.25,<7",
-  "jupytext>=1.16,<2",
-  "nbconvert>=7.8,<8",
-  "sphinx>=7.1,<8",
-  "nbsphinx>=0.9,<1",
-  "sphinx-rtd-theme>=2,<4",
-  "myst-parser>=2,<3",
-]
-
 [tool.setuptools.packages.find]
 include = ["sort*"]
 

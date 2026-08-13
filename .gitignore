@@ -5,14 +5,11 @@ __pycache__/
 .coverage
 build/
 dist/
-docs/_build/
 .venv/
 *.h5ad
 *.h5
 *.npz
 *.npy
 outputs/
-tutorial_outputs/
 .DS_Store
 !tests/data/*.npz
-!tutorials/data/simulation/seed_0003.h5ad

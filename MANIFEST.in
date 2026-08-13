@@ -1,7 +1,4 @@
 include environment.yml
 include THIRD_PARTY_NOTICES.md
-include .readthedocs.yaml
-recursive-include docs *.md *.rst *.py *.txt *.ipynb
 recursive-include tests *.py *.npz
-recursive-include tutorials *.py *.md *.ipynb
 global-exclude __pycache__ *.py[cod]
