@@ -15,6 +15,8 @@ regions and preserves sharp boundaries. This allows SORT to recover programs
 that may be specific to one sample, shared within a biological group or active
 in particular tissue regions.
 
+![Overview of the SORT framework](assets/sort_overview.png)
+
 ## Features
 
 - joint analysis of multiple spatial transcriptomic sections or samples;
