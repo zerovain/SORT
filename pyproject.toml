@@ -44,7 +44,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/zerovain/SORT"
 Repository = "https://github.com/zerovain/SORT"
-Documentation = "https://github.com/zerovain/SORT_tutorial"
+Documentation = "https://sort-tutorial.readthedocs.io/"
 Issues = "https://github.com/zerovain/SORT/issues"
 
 [project.optional-dependencies]

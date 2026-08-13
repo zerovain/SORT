@@ -89,6 +89,8 @@ the signal GEPs used for biological interpretation. For example,
 Detailed tutorials are available in the
 [SORT_tutorial repository](https://github.com/zerovain/SORT_tutorial):
 
+[Online documentation](https://sort-tutorial.readthedocs.io/)
+
 - [Simulated spatial atlas](https://github.com/zerovain/SORT_tutorial/blob/main/notebooks/00_simulated_atlas.ipynb)
 - [PDAC atlas](https://github.com/zerovain/SORT_tutorial/blob/main/notebooks/01_pdac_atlas.ipynb)
 - [Mouse embryogenesis atlas](https://github.com/zerovain/SORT_tutorial/blob/main/notebooks/02_embryogenesis.ipynb)
