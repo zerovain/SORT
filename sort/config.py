@@ -39,6 +39,7 @@ class SORTConfig:
     device: Literal["auto", "cuda", "cpu", "numpy"] = "auto"
     random_state: Optional[int] = 42
     auto_init: bool = True
+    store_reconstruction: bool = False
     init_kwargs: Dict[str, Any] = field(default_factory=dict)
     verbose: Optional[bool] = None
 

@@ -1,0 +1,15 @@
+# Apple-silicon numerical core; install fixed Numba/llvmlite wheels with SORT.
+name: sort
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.8.20=h7d35d02_2_cpython
+  - numpy=1.22.4=py38he1fcd3f_0
+  - https://repo.anaconda.com/pkgs/main::scipy=1.10.1=py38h9d039d2_1
+  - libopenblas=0.3.30=openmp_ha158390_4
+  - openblas=0.3.30=openmp_hea878ba_4
+  - libblas=3.9.0=39_h51639a9_openblas
+  - libcblas=3.9.0=39_hb0561ab_openblas
+  - liblapack=3.9.0=39_hd9741b5_openblas
+  - pip=24.3.1

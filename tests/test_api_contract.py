@@ -81,7 +81,7 @@ def test_sort_default_output_is_concise(monkeypatch, capsys):
 
     def fake_decompose(target, *, copy, **kwargs):
         assert copy is False
-        assert kwargs["verbose"] is False
+        assert kwargs["verbose"] is True
         assert kwargs["device"] == "numpy"
         target.obsm["X_sort"] = np.ones((5, 3), dtype=np.float32)
         target.varm["sort_signatures"] = np.ones((7, 3), dtype=np.float32)

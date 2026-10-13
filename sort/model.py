@@ -92,7 +92,9 @@ class SpatialSemiNMF:
         self.adam_steps         = adam_steps  
         self.grad_clip_norm     = grad_clip_norm  
         self.device             = device  
-        self.verbose            = verbose  
+        # Public verbosity shows progress, not historical optimizer diagnostics.
+        self.verbose            = False
+        self.show_progress      = bool(verbose)
 
         # runtime state  
         self.W                   = None  
@@ -134,7 +136,9 @@ class SpatialSemiNMF:
             if self.use_tv:  
                 print(f"  TV update: every {self.tv_update_freq} epochs")  
 
-        self._initialize_parameters(X, L, W_init, Q_init, auto_init, init_kwargs, n, p)  
+        if self.show_progress:
+            print("Initializing activities and profiles...", flush=True)
+        self._initialize_parameters(X, L, W_init, Q_init, auto_init, init_kwargs, n, p)
         self._compute_l1_weights()  
 
         self._setup_backend(X, L)  
@@ -298,7 +302,7 @@ class SpatialSemiNMF:
     # Optimisation stages  
     # ------------------------------------------------------------------  
 
-    def _optimize_stage1(self, X, epochs, subsample_size):  
+    def _optimize_stage1(self, X, epochs, subsample_size):
         """Stage 1: Hard orthogonality via Procrustes."""  
         if self.verbose:  
             print("\n" + "=" * 70)  
@@ -306,7 +310,9 @@ class SpatialSemiNMF:
             print("=" * 70)  
 
         use_tv         = self.use_tv and (self.tv_stage == 'both')  
-        use_subsample  = X.shape[0] > 100000  
+        use_subsample  = X.shape[0] > 100000
+        if self.show_progress:
+            print(f"Stage 1: orthogonal Procrustes updates ({epochs} epochs)", flush=True)
 
         for epoch in range(epochs):  
             if use_tv and epoch > 0 and epoch % self.tv_update_freq == 0:  
@@ -317,14 +323,14 @@ class SpatialSemiNMF:
             if epoch % 5 == 0:  
                 self._update_Q_procrustes(X, use_subsample, subsample_size)  
 
-            if self.verbose and (epoch % 10 == 0 or epoch == epochs - 1):  
-                self._log_metrics(X, epoch, stage=1)  
+            if self.show_progress and ((epoch + 1) % 10 == 0 or epoch == epochs - 1):
+                print(f"  Stage 1: {epoch + 1}/{epochs} epochs", flush=True)
 
     def _optimize_stage2(self, X, epochs, subsample_size):
-        """Stage 2: Soft orthogonality via Adam — full data, no subsampling."""
+        """Stage 2: Stiefel-constrained updates using the full expression matrix."""
         if self.verbose:
             print("\n" + "=" * 70)
-            print("Stage 2: Soft Orthogonality")
+            print("Stage 2: Stiefel-constrained profile updates")
             print("=" * 70)
         # Reset momentum when switching stages because W may change sharply.
         if self.riem_optimizer is not None:
@@ -333,6 +339,9 @@ class SpatialSemiNMF:
 
         if self.use_tv and not self.tv_manager.is_initialized():
             self.tv_manager.update(self.W_backend)
+        if self.show_progress:
+            spatial = " with graph TV" if self.use_tv else ""
+            print(f"Stage 2: Stiefel-constrained profile updates{spatial} ({epochs} epochs)", flush=True)
 
         for epoch in range(epochs):
             if self.use_tv and epoch > 0 and epoch % self.tv_update_freq == 0:
@@ -341,8 +350,8 @@ class SpatialSemiNMF:
             self._update_W(use_tv_now=self.use_tv)
             self._update_Q_adam(X, epoch=epoch, stage=2)   # no subsample args
 
-            if self.verbose and (epoch % 10 == 0 or epoch == epochs - 1):
-                self._log_metrics(X, epoch, stage=2)
+            if self.show_progress and ((epoch + 1) % 10 == 0 or epoch == epochs - 1):
+                print(f"  Stage 2: {epoch + 1}/{epochs} epochs", flush=True)
 
     # ------------------------------------------------------------------  
     # W update routing  
@@ -637,6 +646,7 @@ def decompose(
     Q_init: Optional[np.ndarray] = None,
     auto_init: bool = True,
     init_kwargs: Optional[dict] = None,
+    store_reconstruction: bool = False,
     # ── output ──────────────────────────────────────────────────────────────
     copy: bool = False,
     verbose: Optional[bool] = None,
@@ -671,6 +681,7 @@ def decompose(
     random_state      : RNG seed
     W_init / Q_init   : optional warm-start matrices
     auto_init         : use SymNMF initialisation
+    store_reconstruction : explicitly allocate a full spots-by-input-genes layer
     init_kwargs       : extra kwargs forwarded to initialize_W_symnmf
     copy              : return a modified copy of adata
     verbose           : print progress (default: from sort.settings)
@@ -705,14 +716,18 @@ def decompose(
         gene_mask  = np.ones(adata.n_vars, dtype=bool)
         X_filtered = X
 
+    if X_filtered.shape[1] == 0:
+        raise ValueError("No genes selected for fitting; check highly_variable or use_highly_variable=False.")
+
     # Normalise to CSR float32 regardless of upstream format
-    X_filtered = _ensure_sparse_csr_float32(X_filtered, verbose=verbose)
+    X_filtered = _ensure_sparse_csr_float32(X_filtered, verbose=False)
 
     L = adata.uns['spatial_laplacian']
 
     # ── init kwargs ──────────────────────────────────────────────────────────
-    if init_kwargs is None:
-        init_kwargs = {}
+    if random_state is not None:
+        np.random.seed(random_state)  # Also seed optimizer subsampling for warm starts.
+    init_kwargs = {} if init_kwargs is None else init_kwargs.copy()
     if random_state is not None and 'random_state' not in init_kwargs:
         init_kwargs['random_state'] = random_state
 
@@ -758,7 +773,10 @@ def decompose(
 
     adata.obsm['X_sort']             = W
     adata.varm['sort_signatures']    = Q_full
-    adata.layers['sort_reconstructed'] = (W @ Q_filtered.T).astype(np.float32)
+    if store_reconstruction:
+        adata.layers['sort_reconstructed'] = (W @ Q_full.T).astype(np.float32)
+    elif 'sort_reconstructed' in adata.layers:
+        del adata.layers['sort_reconstructed']  # Do not retain a previous fit's layer.
 
     comp_names = ['Background'] + [f'Signal_{i}' for i in range(1, n_components)]
 
@@ -779,11 +797,5 @@ def decompose(
         'n_genes_used'  : int(gene_mask.sum()),
         'component_names': comp_names,
     }
-
-    if verbose:
-        print("\nResults stored in:")
-        print("  adata.obsm['X_sort']")
-        print("  adata.varm['sort_signatures']")
-        print("  adata.layers['sort_reconstructed']")
 
     return adata if copy else None

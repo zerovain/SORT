@@ -7,7 +7,7 @@ background and spatially coherent signal components using semi-NMF.
 Main Features
 -------------
 - Background-signal decomposition
-- Spatial regularization via graph Laplacian
+- Spatial regularization via graph total variation
 - Orthogonal signal signatures
 - GPU acceleration support
 - AnnData integration
@@ -37,7 +37,7 @@ Basic Usage
 ...                        Q_norm, dominant, ratios, gene_names)
 """
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 # ==============================================================================
 # Core API

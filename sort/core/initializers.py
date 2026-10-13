@@ -3,6 +3,7 @@ Initialization methods for SymNMF.
 """
 
 import numpy as np
+import warnings
 from scipy.sparse.linalg import svds
 from scipy.sparse import issparse
 
@@ -112,7 +113,12 @@ class NNSVDInitializer:
         
         try:
             # Use sparse SVD directly
-            U, s, Vt = svds_fn(Y, k=k_svd)
+            if not use_cupy and self.random_state is not None:
+                # Explicit ARPACK start avoids incompatible RNG keyword handling.
+                v0 = np.random.standard_normal(min(Y.shape))
+                U, s, Vt = svds_fn(Y, k=k_svd, v0=v0)
+            else:
+                U, s, Vt = svds_fn(Y, k=k_svd)
             idx = xp.argsort(s)[::-1]
             U = U[:, idx]
             s = s[idx]
@@ -123,6 +129,12 @@ class NNSVDInitializer:
                     f"Sparse SVD failed: {e}. "
                     "Try reducing n_components or use dense matrix."
                 )
+
+            warnings.warn(
+                f"Truncated SVD failed ({e}); using dense SVD. "
+                "This may be slower and produce different initialization.",
+                RuntimeWarning, stacklevel=2,
+            )
             
             # Dense SVD fallback
             if use_cupy:

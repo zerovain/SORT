@@ -398,7 +398,7 @@ def build_per_sample_graph(
             adata_sample, coord_type=coord_type,  
             n_neighs=n_neighbors, spatial_key=spatial_key  
         )  
-        compute_laplacian(adata_sample)  
+        compute_laplacian(adata_sample, verbose=False)
         local = adata_sample.uns['spatial_laplacian'].tocoo()
         global_rows.append(sample_indices[local.row])
         global_cols.append(sample_indices[local.col])

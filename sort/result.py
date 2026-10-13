@@ -67,6 +67,7 @@ class SORTResult:
                 "Q_orientation": "genes_by_components",
                 "implementation": "manuscript_equivalent",
                 "sort_params": dict(adata.uns.get("sort", {}).get("params", {})),
+                "fitted_gene_mask": np.asarray(adata.uns.get("sort", {}).get("gene_mask", np.ones(adata.n_vars, dtype=bool)), dtype=bool).tolist(),
             },
             reconstruction=(
                 None if reconstruction is None else np.asarray(reconstruction)
@@ -79,7 +80,11 @@ class SORTResult:
         rows: Optional[Sequence[int]] = None,
         genes: Optional[Sequence[int]] = None,
     ) -> np.ndarray:
-        """Materialize a requested reconstruction slice."""
+        """Reconstruct a requested input-gene slice; unfit genes have zero weights.
+
+        ``metadata['fitted_gene_mask']`` identifies modeled genes. Zero rows for
+        unused genes preserve the input gene axis, not evidence of zero expression.
+        """
 
         w = self.W if rows is None else self.W[np.asarray(rows)]
         q = self.Q if genes is None else self.Q[np.asarray(genes)]
@@ -94,8 +99,9 @@ class SORTResult:
         np.save(output / "Q.npy", self.Q)
         np.save(output / "gene_names.npy", self.gene_names)
         np.save(output / "observation_names.npy", self.observation_names)
-        if include_reconstruction and self.reconstruction is not None:
-            np.save(output / "reconstruction.npy", self.reconstruction)
+        if include_reconstruction:
+            reconstruction = self.reconstruction if self.reconstruction is not None else self.reconstruct()
+            np.save(output / "reconstruction.npy", reconstruction)
         payload = {
             "config": self.config.to_dict(),
             "metadata": self.metadata,

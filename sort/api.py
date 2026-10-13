@@ -66,12 +66,14 @@ class SORT:
             _resolve_auto_device() if kwargs["device"] == "auto" else kwargs["device"]
         )
         kwargs["device"] = resolved_device
-        concise = kwargs["verbose"] is None
-        if concise:
-            kwargs["verbose"] = False
+        show_progress = kwargs["verbose"] is not False
+        kwargs["verbose"] = show_progress
+        if show_progress:
+            n_genes = int(target.var["highly_variable"].sum()) if kwargs["use_highly_variable"] and "highly_variable" in target.var else target.n_vars
             print(
-                f"SORT: {target.n_obs:,} locations x {target.n_vars:,} genes; "
-                f"{self.config.n_components} components"
+                f"SORT: {target.n_obs:,} locations x {n_genes:,} genes; "
+                f"{self.config.n_components} components; device={resolved_device}",
+                flush=True,
             )
 
         started = perf_counter()
@@ -81,7 +83,7 @@ class SORT:
         result.metadata["fit_time_seconds"] = elapsed
         result.metadata["resolved_device"] = resolved_device
         self.result_ = result
-        if concise:
+        if show_progress:
             print(f"Finished in {elapsed:.1f} s")
             print(
                 "Stored .obsm['X_sort'] "

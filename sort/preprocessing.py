@@ -91,8 +91,8 @@ def smooth_expression_sparse_cpu(X, A, center_weight=0.5, block_size=50000, verb
     
     if verbose:
         print(f"  Sparse smoothing (CPU): {n:,} spots × {p:,} genes")
-        print(f"    X density: {X.nnz/X.size:.2%} ({X.nnz:,} non-zeros)")
-        print(f"    A density: {A.nnz/A.size:.2%} ({A.nnz:,} non-zeros)")
+        print(f"    X density: {X.nnz/(n*p):.2%} ({X.nnz:,} non-zeros)")
+        print(f"    A density: {A.nnz/(n*n):.2%} ({A.nnz:,} non-zeros)")
     
     # Ensure CSR format for efficient row slicing
     X_csr = X.tocsr() if not isinstance(X, csr_matrix) else X
@@ -707,6 +707,8 @@ def compute_laplacian(
     adata: AnnData,
     normalized: bool = True,
     copy: bool = False,
+    *,
+    verbose: bool = True,
 ) -> Optional[AnnData]:
     """
     Compute graph Laplacian from spatial adjacency.
@@ -735,8 +737,9 @@ def compute_laplacian(
     adata.uns['spatial_laplacian'] = L
     adata.uns['laplacian_params'] = {'normalized': normalized}
     
-    laplacian_type = "normalized" if normalized else "unnormalized"
-    print(f"Computed {laplacian_type} Laplacian")
+    if verbose:
+        laplacian_type = "normalized" if normalized else "unnormalized"
+        print(f"Computed {laplacian_type} Laplacian")
     
     return adata if copy else None
 
