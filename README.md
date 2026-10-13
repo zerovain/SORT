@@ -17,14 +17,6 @@ in particular tissue regions.
 
 ![Overview of the SORT framework](assets/sort_overview.png)
 
-## Features
-
-- joint analysis of multiple spatial transcriptomic sections or samples;
-- shared gene-expression profiles with sample-specific spatial activities;
-- recovery of spatial programs at different biological scales;
-- CPU and CUDA support;
-- integration with `AnnData` and Scanpy workflows.
-
 ## Installation
 
 SORT uses one package for CPU and GPU execution. CUDA is optional, not an
@@ -110,18 +102,6 @@ Use `device="cuda"` to require GPU execution or `device="numpy"` to select CPU.
 
 If Conda reports that the libmamba solver is unavailable, update Conda or use
 a recent Miniforge installation. No global channel changes are needed.
-
-To run the package tests, install the `test` extra and run:
-
-```bash
-python -m pip install -e '.[test]' -c constraints-reference.txt
-python -m pytest tests -q
-```
-
-The simulation example runs on a standard desktop CPU; no GPU or other
-non-standard hardware is required. The optional GPU route uses
-PyTorch 2.4.1+cu121 and CuPy 12.3.0. Allow additional download time for the CUDA
-libraries. CPU and GPU fits can differ numerically.
 
 The complete simulation notebook, including PCA/NMF, plotting and matrix export,
 was tested on CPU. SORT fitting took about 45–80 seconds in the tested
