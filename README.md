@@ -103,10 +103,11 @@ Use `device="cuda"` to require GPU execution or `device="numpy"` to select CPU.
 If Conda reports that the libmamba solver is unavailable, update Conda or use
 a recent Miniforge installation. No global channel changes are needed.
 
-The complete simulation notebook, including PCA/NMF, plotting and matrix export,
-was tested on CPU. SORT fitting took about 45–80 seconds in the tested
-configurations. Runtime depends on hardware and numerical thread settings;
-installation time depends on download speed and whether packages are cached.
+Tested with Python 3.8.20 on Linux x86_64 (kernel 5.15) and macOS 26.5.1
+(Apple silicon). Creating the Conda environment and installing SORT and its
+dependencies took about 5 minutes in the Linux test; download times vary.
+The complete simulation notebook, including PCA/NMF, plotting and export,
+took about 3 minutes on an Apple-silicon CPU.
 
 ## Basic usage
 
